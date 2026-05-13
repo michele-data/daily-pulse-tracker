@@ -58,12 +58,39 @@ if st.button("Salva giornata"):
 
 st.divider()
 
-# 📊 GRAFICO ANDAMENTO
+# 📊 GRAFICO ANDAMENTO (INTERATTIVO)
 st.subheader("📊 Andamento nel tempo")
 
 if len(df) > 0:
+
     df["data"] = pd.to_datetime(df["data"])
-    st.line_chart(df.set_index("data")[["energia", "umore", "produttivita"]])
+
+    # 🎛️ FILTRI DIRETTI PER IL GRAFICO
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        show_energia = st.checkbox("Energia", value=True)
+
+    with col2:
+        show_umore = st.checkbox("Umore", value=True)
+
+    with col3:
+        show_prod = st.checkbox("Produttività", value=True)
+
+    columns = []
+
+    if show_energia:
+        columns.append("energia")
+    if show_umore:
+        columns.append("umore")
+    if show_prod:
+        columns.append("produttivita")
+
+    if len(columns) > 0:
+        st.line_chart(df.set_index("data")[columns])
+    else:
+        st.info("Seleziona almeno una categoria da visualizzare.")
+
 else:
     st.info("Nessun dato ancora disponibile.")
 
