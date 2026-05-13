@@ -69,3 +69,30 @@ if len(df) > 0:
         st.dataframe(df.tail(10))
 else:
     st.info("Nessun dato ancora disponibile.")
+
+# 🧾 ANALISI NOTE
+st.subheader("🧾 Analisi delle note")
+
+if len(df) > 0 and "note" in df.columns:
+
+    df["note"] = df["note"].fillna("")
+
+    keyword = st.text_input("Cerca nelle note (es: lavoro, studio, stress)")
+
+    if keyword:
+        filtered = df[df["note"].str.contains(keyword, case=False, na=False)]
+        st.write(f"📌 Risultati per: **{keyword}**")
+        st.dataframe(filtered[["data", "energia", "umore", "produttivita", "note"]])
+    else:
+        st.info("Inserisci una parola per filtrare le note.")
+
+    all_words = " ".join(df["note"].dropna()).lower().split()
+
+    if len(all_words) > 0:
+        word_series = pd.Series(all_words)
+        top_words = word_series.value_counts().head(10)
+
+        st.subheader("🔥 Parole più frequenti nelle note")
+        st.dataframe(top_words)
+else:
+    st.info("Nessuna nota disponibile.")
