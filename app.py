@@ -17,6 +17,7 @@ st.sidebar.write("App per tracciare il tuo stato giornaliero")
 show_data = st.sidebar.checkbox("Mostra dati grezzi")
 
 FILE = "data.csv"
+df = carica_dati()
 
 # 📥 INPUT UTENTE
 energia = st.slider("Energia", 1, 10, 5)
@@ -52,12 +53,16 @@ if st.button("Salva giornata"):
 def carica_dati():
     if os.path.exists(FILE):
         try:
-            df = carica_dati()
+            df = pd.read_csv(FILE)
+
             if df.empty:
                 return pd.DataFrame(columns=["data", "energia", "umore", "produttivita", "note"])
+
             return df
+
         except pd.errors.EmptyDataError:
             return pd.DataFrame(columns=["data", "energia", "umore", "produttivita", "note"])
+
     else:
         return pd.DataFrame(columns=["data", "energia", "umore", "produttivita", "note"])
 
