@@ -49,10 +49,17 @@ if st.button("Salva giornata"):
     st.dataframe(df.tail())
 
 # 📊 CARICAMENTO DATI (SEMPRE FRESCO)
-if os.path.exists(FILE):
-    df = pd.read_csv(FILE)
-else:
-    df = pd.DataFrame(columns=["data", "energia", "umore", "produttivita", "note"])
+def carica_dati():
+    if os.path.exists(FILE):
+        try:
+            df = carica_dati()
+            if df.empty:
+                return pd.DataFrame(columns=["data", "energia", "umore", "produttivita", "note"])
+            return df
+        except pd.errors.EmptyDataError:
+            return pd.DataFrame(columns=["data", "energia", "umore", "produttivita", "note"])
+    else:
+        return pd.DataFrame(columns=["data", "energia", "umore", "produttivita", "note"])
 
 st.divider()
 
