@@ -17,7 +17,7 @@ show_data = st.sidebar.checkbox("Mostra dati grezzi")
 
 FILE = "data.csv"
 
-
+# 📊 CARICAMENTO DATI
 def carica_dati():
     if (not os.path.exists(FILE)) or os.path.getsize(FILE) == 0:
         return pd.DataFrame(columns=["data", "energia", "umore", "produttivita", "note"])
@@ -27,7 +27,7 @@ def carica_dati():
     except pd.errors.EmptyDataError:
         return pd.DataFrame(columns=["data", "energia", "umore", "produttivita", "note"])
 
-
+# 💾 SALVATAGGIO
 def salva_dati(energia, umore, produttivita, note):
     nuovo_record = pd.DataFrame([{
         "data": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -38,13 +38,12 @@ def salva_dati(energia, umore, produttivita, note):
     }])
 
     df_old = carica_dati()
-
     df = pd.concat([df_old, nuovo_record], ignore_index=True)
     df.to_csv(FILE, index=False)
 
     return df
 
-
+# 📥 INPUT UTENTE
 energia = st.slider("Energia", 1, 10, 5)
 umore = st.slider("Umore", 1, 10, 5)
 produttivita = st.slider("Produttività", 1, 10, 5)
@@ -57,8 +56,20 @@ if st.button("Salva giornata"):
     st.success("Dati salvati con successo!")
     st.dataframe(df.tail())
 
-# 🧠 INSIGHT AUTOMATICI
 st.divider()
+
+# 📊 GRAFICO ANDAMENTO
+st.subheader("📊 Andamento nel tempo")
+
+if len(df) > 0:
+    df["data"] = pd.to_datetime(df["data"])
+    st.line_chart(df.set_index("data")[["energia", "umore", "produttivita"]])
+else:
+    st.info("Nessun dato ancora disponibile.")
+
+st.divider()
+
+# 🧠 INSIGHT AUTOMATICI
 st.subheader("🧠 Insight automatici")
 
 if len(df) > 3:
@@ -104,4 +115,3 @@ if len(df) > 0:
     st.dataframe(df[columns_to_show])
 else:
     st.info("Nessun dato disponibile.")
-    st.info("Nessuna nota disponibile.")
