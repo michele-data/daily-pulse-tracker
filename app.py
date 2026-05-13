@@ -70,28 +70,34 @@ if len(df) > 0:
 else:
     st.info("Nessun dato ancora disponibile.")
 
-# 🧾 ANALISI NOTE
-st.subheader("🧾 Analisi delle note")
+# 🎛️ FILTRO DATI
+st.subheader("🎛️ Filtro dati")
 
-if len(df) > 0 and "note" in df.columns:
+if len(df) > 0:
 
-    df["note"] = df["note"].fillna("")
+    col1, col2, col3 = st.columns(3)
 
-    keyword = st.text_input("Cerca nelle note (es: lavoro, studio, stress)")
+    with col1:
+        show_energia = st.checkbox("Energia", value=True)
 
-    if keyword:
-        filtered = df[df["note"].str.contains(keyword, case=False, na=False)]
-        st.write(f"📌 Risultati per: **{keyword}**")
-        st.dataframe(filtered[["data", "energia", "umore", "produttivita", "note"]])
-    else:
-        st.info("Inserisci una parola per filtrare le note.")
+    with col2:
+        show_umore = st.checkbox("Umore", value=True)
 
-    all_words = " ".join(df["note"].dropna()).lower().split()
+    with col3:
+        show_prod = st.checkbox("Produttività", value=True)
 
-    if len(all_words) > 0:
-        word_series = pd.Series(all_words)
-        top_words = word_series.value_counts().head(10)
+    columns_to_show = ["data"]
 
+    if show_energia:
+        columns_to_show.append("energia")
+    if show_umore:
+        columns_to_show.append("umore")
+    if show_prod:
+        columns_to_show.append("produttivita")
+
+    st.dataframe(df[columns_to_show])
+else:
+    st.info("Nessun dato disponibile.")
         st.subheader("🔥 Parole più frequenti nelle note")
         st.dataframe(top_words)
 else:
