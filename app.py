@@ -17,16 +17,26 @@ st.sidebar.write("App per tracciare il tuo stato giornaliero")
 show_data = st.sidebar.checkbox("Mostra dati grezzi")
 
 FILE = "data.csv"
-df = carica_dati()
 
-# 📥 INPUT UTENTE
-energia = st.slider("Energia", 1, 10, 5)
-umore = st.slider("Umore", 1, 10, 5)
-produttivita = st.slider("Produttività", 1, 10, 5)
-note = st.text_input("Nota (opzionale)")
+# 📊 CARICAMENTO DATI
+def carica_dati():
+    try:
+        if os.path.exists(FILE):
+            df = pd.read_csv(FILE)
+
+            if df is None or df.empty:
+                return pd.DataFrame(columns=["data", "energia", "umore", "produttivita", "note"])
+
+            return df
+        else:
+            return pd.DataFrame(columns=["data", "energia", "umore", "produttivita", "note"])
+
+    except Exception:
+        return pd.DataFrame(columns=["data", "energia", "umore", "produttivita", "note"])
+
 
 # 💾 SALVATAGGIO
-def salva_dati():
+def salva_dati(energia, umore, produttivita, note):
     nuovo_record = pd.DataFrame([{
         "data": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "energia": energia,
@@ -44,30 +54,19 @@ def salva_dati():
     df.to_csv(FILE, index=False)
     return df
 
+
+df = carica_dati()
+
+# 📥 INPUT UTENTE
+energia = st.slider("Energia", 1, 10, 5)
+umore = st.slider("Umore", 1, 10, 5)
+produttivita = st.slider("Produttività", 1, 10, 5)
+note = st.text_input("Nota (opzionale)")
+
 if st.button("Salva giornata"):
-    df = salva_dati()
+    df = salva_dati(energia, umore, produttivita, note)
     st.success("Dati salvati con successo!")
     st.dataframe(df.tail())
-
-# 📊 CARICAMENTO DATI
-def carica_dati():
-    try:
-        if os.path.exists(FILE):
-            df = pd.read_csv(FILE)
-
-            if df is None or df.empty:
-                return pd.DataFrame(columns=[...])
-
-            return df
-
-        else:
-            return pd.DataFrame(columns=[...])
-
-    except Exception:
-        return pd.DataFrame(columns=[...])
-
-# 👇 QUESTA È FONDAMENTALE
-df = carica_dati()
 
 st.divider()
 
@@ -76,7 +75,6 @@ st.subheader("📊 Andamento nel tempo")
 
 if len(df) > 0:
     df["data"] = pd.to_datetime(df["data"])
-
     st.line_chart(df.set_index("data")[["energia", "umore", "produttivita"]])
 
     st.subheader("📅 Ultimi dati inseriti")
@@ -86,12 +84,12 @@ if len(df) > 0:
 else:
     st.info("Nessun dato ancora disponibile.")
 
-# 🧠 INSIGHT
 st.divider()
+
+# 🧠 INSIGHT
 st.subheader("🧠 Insight automatici")
 
 if len(df) > 3:
-
     media_energia = df["energia"].mean()
     media_umore = df["umore"].mean()
     media_prod = df["produttivita"].mean()
@@ -112,16 +110,15 @@ if len(df) > 3:
         st.warning(f"Relazione negativa ({corr:.2f})")
     else:
         st.write(f"Nessuna relazione chiara ({corr:.2f})")
-
 else:
     st.info("Servono almeno 4 giorni di dati.")
 
-# 📅 ANALISI SETTIMANALE
 st.divider()
+
+# 📅 ANALISI SETTIMANALE
 st.subheader("📅 Analisi settimanale")
 
 if len(df) > 7:
-
     df_week = df.copy()
     df_week["data"] = pd.to_datetime(df_week["data"])
     df_week["settimana"] = df_week["data"].dt.isocalendar().week
@@ -133,7 +130,6 @@ if len(df) > 7:
     precedente = df_week[df_week["settimana"] == settimana_precedente]
 
     if len(precedente) > 0:
-
         media_corrente = corrente[["energia", "umore", "produttivita"]].mean()
         media_precedente = precedente[["energia", "umore", "produttivita"]].mean()
 
@@ -148,9 +144,7 @@ if len(df) > 7:
                 st.success(f"{col}: +{val:.2f}")
             else:
                 st.warning(f"{col}: {val:.2f}")
-
     else:
         st.info("Serve anche la settimana precedente.")
-
 else:
     st.info("Servono almeno 8 giorni di dati.")
