@@ -57,20 +57,26 @@ if st.button("Salva giornata"):
     st.success("Dati salvati con successo!")
     st.dataframe(df.tail())
 
+# 🧠 INSIGHT AUTOMATICI
+st.divider()
+st.subheader("🧠 Insight automatici")
+
+if len(df) > 3:
+
+    media_energia = df["energia"].mean()
+    media_umore = df["umore"].mean()
+    media_prod = df["produttivita"].mean()
+
+    st.write(f"📌 Energia media: {media_energia:.2f}")
+    st.write(f"📌 Umore medio: {media_umore:.2f}")
+    st.write(f"📌 Produttività media: {media_prod:.2f}")
+
+else:
+    st.info("Servono almeno 4 giorni di dati.")
+
 st.divider()
 
-st.subheader("📊 Andamento nel tempo")
-
-if len(df) > 0:
-    df["data"] = pd.to_datetime(df["data"])
-    st.line_chart(df.set_index("data")[["energia", "umore", "produttivita"]])
-
-    if show_data:
-        st.dataframe(df.tail(10))
-else:
-    st.info("Nessun dato ancora disponibile.")
-
-# 🎛️ FILTRO DATI
+# 🎛️ FILTRO TABELLA
 st.subheader("🎛️ Filtro dati")
 
 if len(df) > 0:
@@ -98,7 +104,4 @@ if len(df) > 0:
     st.dataframe(df[columns_to_show])
 else:
     st.info("Nessun dato disponibile.")
-        st.subheader("🔥 Parole più frequenti nelle note")
-        st.dataframe(top_words)
-else:
     st.info("Nessuna nota disponibile.")
