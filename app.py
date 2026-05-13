@@ -39,3 +39,25 @@ if st.button("Salva giornata"):
     st.success("Dati salvati con successo!")
 
     st.dataframe(df.tail())
+
+
+# 📊 CARICAMENTO DATI
+if os.path.exists(FILE):
+    df = pd.read_csv(FILE)
+else:
+    df = pd.DataFrame(columns=["data", "energia", "umore", "produttivita", "note"])
+
+st.divider()
+
+st.subheader("📊 Andamento nel tempo")
+
+if len(df) > 0:
+    # convertiamo data
+    df["data"] = pd.to_datetime(df["data"])
+
+    st.line_chart(df.set_index("data")[["energia", "umore", "produttivita"]])
+
+    st.subheader("📅 Ultimi dati inseriti")
+    st.dataframe(df.tail(10))
+else:
+    st.info("Nessun dato ancora disponibile. Inserisci la tua prima giornata.")
