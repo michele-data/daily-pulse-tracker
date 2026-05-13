@@ -65,25 +65,25 @@ if len(df) > 0:
 
     df["data"] = pd.to_datetime(df["data"])
 
-    # 🎛️ FILTRI DIRETTI PER IL GRAFICO
+    # 🎛️ FILTRI GRAFICO (KEY UNICHE)
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        show_energia = st.checkbox("Energia", value=True)
+        show_energia_g = st.checkbox("Energia", value=True, key="grafico_energia")
 
     with col2:
-        show_umore = st.checkbox("Umore", value=True)
+        show_umore_g = st.checkbox("Umore", value=True, key="grafico_umore")
 
     with col3:
-        show_prod = st.checkbox("Produttività", value=True)
+        show_prod_g = st.checkbox("Produttività", value=True, key="grafico_prod")
 
     columns = []
 
-    if show_energia:
+    if show_energia_g:
         columns.append("energia")
-    if show_umore:
+    if show_umore_g:
         columns.append("umore")
-    if show_prod:
+    if show_prod_g:
         columns.append("produttivita")
 
     if len(columns) > 0:
@@ -114,7 +114,7 @@ else:
 
 st.divider()
 
-# 🎛️ FILTRO TABELLA
+# 🎛️ FILTRO TABELLA (KEY UNICHE)
 st.subheader("🎛️ Filtro dati")
 
 if len(df) > 0:
@@ -122,21 +122,21 @@ if len(df) > 0:
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        show_energia = st.checkbox("Energia", value=True)
+        show_energia_t = st.checkbox("Energia", value=True, key="tab_energia")
 
     with col2:
-        show_umore = st.checkbox("Umore", value=True)
+        show_umore_t = st.checkbox("Umore", value=True, key="tab_umore")
 
     with col3:
-        show_prod = st.checkbox("Produttività", value=True)
+        show_prod_t = st.checkbox("Produttività", value=True, key="tab_prod")
 
     columns_to_show = ["data"]
 
-    if show_energia:
+    if show_energia_t:
         columns_to_show.append("energia")
-    if show_umore:
+    if show_umore_t:
         columns_to_show.append("umore")
-    if show_prod:
+    if show_prod_t:
         columns_to_show.append("produttivita")
 
     st.dataframe(df[columns_to_show])
